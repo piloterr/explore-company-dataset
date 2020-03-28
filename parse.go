@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
-	"net/http"
 	"strings"
 )
 
@@ -29,27 +29,21 @@ type NewCompany Company
 
 // GetURLContent returns the content of a file in the URL
 func GetURLContent(url string) string {
-	resp, err := http.Get(url)
+	bytes, err := ioutil.ReadFile(url)
 	if err != nil {
 		panic(err)
 	}
 
-	defer resp.Body.Close()
-
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(data)
+	return string(bytes)
 }
 
 // ParseData takes the json data and parse it as an array
-func ParseData(data string) string {
+func ParseData(url, key, data string) {
 	lines := strings.Split(data, "\n")
-	var companies []string
 
 	for id, line := range lines {
+		fmt.Printf("Parsing the %dth line.\n", id)
+
 		// Serialize the json
 		var company Company
 		err := json.Unmarshal([]byte(line), &company)
@@ -66,8 +60,6 @@ func ParseData(data string) string {
 			panic(err)
 		}
 
-		companies = append(companies, string(bytes))
+		PostData(url, "[" + string(bytes) + "]", key)
 	}
-
-	return "[" + strings.Join(companies, ", ") + "]"
 }

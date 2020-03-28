@@ -25,7 +25,5 @@ func main() {
 	fmt.Println("Getting dataset content")
 	data := GetURLContent(*datasetUrl)
 	fmt.Println("Formatting the data")
-	payload := ParseData(data)
-	fmt.Println("Sending the payload to MeiliSearch")
-	PostData(*meiliUrl, payload, secretKey)
+	ParseData(*meiliUrl, secretKey, data)
 }
